@@ -35,12 +35,11 @@ class StockServices
         res.send(200, {}, result)
 
     @checkHistoryParam: (data) ->
-        if(data.a and data.b and data.c)
-            pass = true
+        return false if not data.s
+        return false if not (data.a and data.b and data.c)
         if(data.d)
-            if not (data.e and data.f)
-                pass = false
-        pass
+            return false if not (data.e and data.f)
+        true
 
     @getHistory: (req, res, data)=>
         
@@ -48,9 +47,9 @@ class StockServices
         console.log(data)
 
         if data.d
-            url = "http://ichart.finance.yahoo.com/table.csv?s=ANGI&a=#{data.a}&b=#{data.b}&c=#{data.c}&ignore=.csv"
+            url = "http://ichart.finance.yahoo.com/table.csv?s=#{data.s}&a=#{data.a}&b=#{data.b}&c=#{data.c}&ignore=.csv"
         else   
-            url = "http://ichart.finance.yahoo.com/table.csv?s=ANGI
+            url = "http://ichart.finance.yahoo.com/table.csv?s=#{data.s}
                     &d=#{data.d}&e=#{data.e}&f=#{data.f}&g=d
                     &a=#{data.a}&b=#{data.b}&c=#{data.c}&ignore=.csv" 
 
