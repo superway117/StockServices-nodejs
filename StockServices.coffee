@@ -47,11 +47,11 @@ class StockServices
         console.log(data)
 
         if data.d
-            url = "http://ichart.finance.yahoo.com/table.csv?s=#{data.s}&a=#{data.a}&b=#{data.b}&c=#{data.c}&ignore=.csv"
-        else   
             url = "http://ichart.finance.yahoo.com/table.csv?s=#{data.s}
                     &d=#{data.d}&e=#{data.e}&f=#{data.f}&g=d
-                    &a=#{data.a}&b=#{data.b}&c=#{data.c}&ignore=.csv" 
+                    &a=#{data.a}&b=#{data.b}&c=#{data.c}&ignore=.csv"      
+        else   
+            url = "http://ichart.finance.yahoo.com/table.csv?s=#{data.s}&a=#{data.a}&b=#{data.b}&c=#{data.c}&ignore=.csv"
 
         http.get url,(response) =>
             pageData=""
