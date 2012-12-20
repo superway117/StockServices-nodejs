@@ -59,34 +59,34 @@ class StockServices
                 pageData += chunk
 
             response.on 'end', =>
-                result = @parseHistoryData(res,pageData)
+                result = @parseHistoryData(res,data,pageData)
             
         .on 'error', (e) =>
             @outputError(res,e.message)
 
-    @parseHistoryData: (res,data)->
+    @parseHistoryData: (res,data,pageData)->
         result={}
         result["status"]="succ"
         result["list"]=[]
-        result["count"]=0
-        csv().from( data )
-        .transform (data)->
-            data.unshift(data.pop());
-            return data;
-        .on "record", (data,index)->
+        #result["count"]=0
+        csv().from( pageData )
+        .transform (line)->
+            line.unshift(line.pop());
+            return line;
+        .on "record", (line,index)->
             if index>0
                 output={}
-                output["adjclose"]=data[0]
-                output["date"]=data[1]
-                output["open"]=data[2]
-                output["high"]=data[3]
-                output["low"]=data[4]
-                output["close"]=data[5]
-                output["volume"]=data[6]
+                output["adjclose"]=line[0]
+                output["date"]=line[1]
+                output["open"]=line[2]
+                output["high"]=line[3]
+                output["low"]=line[4]
+                output["close"]=line[5]
+                output["volume"]=line[6]
                 result.list.push(output)
         .on "end", (count)->
-            result.count=count
-            res.send(200, {},result)
+            res.sendJSONP(data.callback,result)
+        
         .on "error", (error)=>
             @outputError(res,e.message)
         
