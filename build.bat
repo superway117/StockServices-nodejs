@@ -1,1 +1,1 @@
-coffee  --compile --bare ./
+coffee  -cw --bare ./
