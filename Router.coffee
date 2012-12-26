@@ -8,7 +8,7 @@ class Router
         @jRouter.map =>
             for handle in RequestHandler.getHandlers()
                 method = handle.method or "get"
-                console.log(handle)
+                console?.log(handle)
                 @jRouter[method](handle.category).bind(handle.route)
 
     @handle: (request, body, callback) ->

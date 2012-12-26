@@ -39,7 +39,7 @@ class StockServices
 
     @get: (res, params,url,callback)=>
         
-        console.log("------------get---------------")
+        console?.log("------------get---------------")
         http.get url,(response) =>
             pageData=""
             response.on 'data', (chunk) ->
@@ -70,7 +70,7 @@ class StockServices
 
     @getHistory: (req, res, params)=>
         
-        console.log("------------getHistory---------------")
+        console?.log("------------getHistory---------------")
         if params.d
             url = "http://ichart.finance.yahoo.com/table.csv?s=#{params.yahoo}
                     &d=#{params.d}&e=#{params.e}&f=#{params.f}&g=d
@@ -143,7 +143,7 @@ class StockServices
 
     @getLast: (req, res, params)=>
         
-        console.log("------------getLast---------------")
+        console?.log("------------getLast---------------")
         sinaurl = "http://hq.sinajs.cn/list=#{params.sina}" 
 
         @get(res,params,sinaurl,@parseSinaLastData)
@@ -170,7 +170,7 @@ class StockServices
                 record["chg"] = item[2]
                 record["chgPre"] = item[3]
                 record["volume"] = item[4]
-                console.log (item[5])
+                console?.log (item[5])
                 record["volMoney"] = item[5]
             else
                 record["name"]=StockDict[record["id"] ]
@@ -219,7 +219,7 @@ class StockServices
 
     @getQuotes: (req, res, params)=>
         
-        console.log("------------getQuotes---------------")
+        console?.log("------------getQuotes---------------")
         stocks = params.yahoo.join("+")
         url = "http://finance.yahoo.com/d/quotes.csv?s=#{stocks}&f=sd1ejkj5j6k4k5m3m4m5m6m7m8rr2" 
         
@@ -232,9 +232,6 @@ class StockServices
         
         csv().from( pageData )
         .transform (line)->
-            #console.log(line)
-            #line.unshift(line.pop());
-            #console.log(line)
             return line;
         .on "record", (line,index)->
             
