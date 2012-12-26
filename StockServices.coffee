@@ -17,7 +17,7 @@ class StockServices
             @outputError(res,"wrong api")
             return 
         subroute = @handles[params.api]
-        console.log("tezt")
+        
         if subroute
             if @[subroute[1]](params)
                 @[subroute[0]](req, res, params)
