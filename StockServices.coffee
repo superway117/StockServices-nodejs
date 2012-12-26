@@ -3,7 +3,6 @@
 http = require('follow-redirects').http;
 sys = require('sys')
 csv = require('csv')
-Iconv = require('iconv').Iconv
 StockDict = require('./StockDict').StockDict
 
 RequestHandler = require('./RequestHandler').RequestHandler
