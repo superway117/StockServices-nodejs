@@ -249,7 +249,7 @@ class StockServices
             output["high52"]=line[4]   #k
 
             output["chgLow52"]=line[5]  #j5
-            output["chPreLow52"]=line[6]   #j6
+            output["chgPreLow52"]=line[6]   #j6
             output["chgHigh52"]=line[7] #k4
             output["chgPreHigh52"]=line[8] #k5
             output["movAvg50"]=line[9] #m3
