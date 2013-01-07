@@ -1,0 +1,16 @@
+[CST Jan  6 16:12:14] info     : monit: generated unique Monit id f9735fe775a549402f4008753d48b345 and stored to '/home/eason/.monit.id'
+[CST Jan  6 16:12:14] info     : Starting monit daemon
+[CST Jan  6 16:12:14] error    : State file '/home/eason/.monit.state': Unable to read magic
+[CST Jan  6 16:12:14] info     : 'system_ubuntu' Monit started
+[CST Jan  6 16:12:25] error    : 'nodejs' failed, cannot open a connection to INET[localhost:8000/] via TCP
+[CST Jan  6 16:12:33] info     : 'nodejs' trying to restart
+[CST Jan  6 16:12:33] info     : 'nodejs' stop: /bin/kill
+[CST Jan  6 16:13:03] error    : 'nodejs' failed to stop
+[CST Jan  6 16:15:12] error    : 'nodejs' failed, cannot open a connection to INET[localhost:8000/] via TCP
+[CST Jan  6 16:15:12] info     : 'nodejs' trying to restart
+[CST Jan  6 16:15:12] info     : 'nodejs' stop: /bin/kill
+[CST Jan  6 16:15:42] error    : 'nodejs' failed to stop
+[CST Jan  6 16:17:42] error    : 'nodejs' failed, cannot open a connection to INET[localhost:8000/] via TCP
+[CST Jan  6 16:17:42] info     : 'nodejs' trying to restart
+[CST Jan  6 16:17:42] info     : 'nodejs' stop: /bin/kill
+[CST Jan  6 16:18:12] error    : 'nodejs' failed to stop

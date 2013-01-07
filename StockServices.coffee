@@ -3,6 +3,7 @@
 http = require('follow-redirects').http;
 sys = require('sys')
 csv = require('csv')
+$ = require('jquery')
 StockDict = require('./StockDict').StockDict
 
 RequestHandler = require('./RequestHandler').RequestHandler
@@ -29,6 +30,7 @@ class StockServices
             gethistory: ["getHistory","checkHistoryParam"]
             getlast: ["getLast","checkLastParam"]
             getquotes: ["getQuotes","checkQuotesParam"]
+            getfunds: ["getFunds","checkFundsParam"]
         }
 
     @outputError: (res,message)->
@@ -39,7 +41,6 @@ class StockServices
 
     @get: (res, params,url,callback)=>
         
-
         http.get url,(response) =>
             pageData=""
             response.on 'data', (chunk) ->
@@ -70,6 +71,7 @@ class StockServices
 
     @getHistory: (req, res, params)=>
         
+        console?.log("------------getHistory---------------")
         if params.d
             url = "http://ichart.finance.yahoo.com/table.csv?s=#{params.yahoo}
                     &d=#{params.d}&e=#{params.e}&f=#{params.f}&g=d
@@ -142,7 +144,7 @@ class StockServices
 
     @getLast: (req, res, params)=>
         
-
+        console?.log("------------getLast---------------")
         sinaurl = "http://hq.sinajs.cn/list=#{params.sina}" 
 
         @get(res,params,sinaurl,@parseSinaLastData)
@@ -169,7 +171,7 @@ class StockServices
                 record["chg"] = item[2]
                 record["chgPre"] = item[3]
                 record["volume"] = item[4]
-   
+                console?.log (item[5])
                 record["volMoney"] = item[5]
             else
                 record["name"]=StockDict[record["id"] ]
@@ -207,7 +209,7 @@ class StockServices
                 record["date"] = item[30]
                 record["time"] = item[31]
             result["list"].push(record)
-
+        console?.log("------------parseSinaLastData---------------")
         res.sendJSONP(params.callback,result)
         
     @checkQuotesParam: (params) ->
@@ -218,7 +220,7 @@ class StockServices
 
     @getQuotes: (req, res, params)=>
         
-
+        console?.log("------------getQuotes---------------")
         stocks = params.yahoo.join("+")
         url = "http://finance.yahoo.com/d/quotes.csv?s=#{stocks}&f=sd1ejkj5j6k4k5m3m4m5m6m7m8rr2" 
         
@@ -261,5 +263,70 @@ class StockServices
         
         .on "error", (error)=>
             @outputError(res,e.message)
+
+    @canonicalIfeng: (stock)->
+        return if stock.length < 6
+        id = stock[0..5]
+        if( stock.charAt(0) is '6')
+            return "sh#{id}"
+        else
+            return "sz#{id}"
+
+    @checkFundsParam: (params) ->
+        #format "002142" or "002142.sz"
+        return false if not params.s
+        if(params.a)
+            return false if not (params.b and params.c)
+        if(params.d)
+            return false if not (params.e and params.f)
+        params["ifeng"] = @canonicalIfeng(params.s)
+        true
+
+    @getFunds: (req, res, params)=>
+        
+        console?.log("------------getFunds---------------")
+        ifengurl = "http://app.finance.ifeng.com/data/stock/tab_zjlx.php?code=#{params.ifeng}" 
+        if params.a
+            ifengurl+="&begin_day=#{params.c}-#{params.a}-#{params.b}"
+        if params.d
+            ifengurl+="&end_day=#{params.f}-#{params.d}-#{params.e}"
+            
+        console?.log(ifengurl)
+        @get(res,params,ifengurl,@parseIfengFundsData)
+
+    @parseIfengFundsData: (res,params,pageData)->
+        result={}
+        result["status"]="succ"
+        result["list"]=[]
+        $domData = $(pageData)
+        $records=$domData.find("table.lable_tab01 tbody tr")
+        
+        length = $records.size()
+        if length <= 2
+            @outputError(res,e.message)
+            return
+        for index in [1..length-2]
+            $record = $($records.get(index)).find("td")
+            i=0
+            item={}
+            item["date"]=$($record.get(i++)).text()
+            item["total"]=$($record.get(i++)).text()
+            item["stotal"]=$($record.get(i++)).text()
+            item["mtotal"]=$($record.get(i++)).text()
+            item["ltotal"]=$($record.get(i++)).text()
+            item["sltotal"]=$($record.get(i++)).text()
+            item["volume"]=$($record.get(i++)).text()
+            item["growth"]=$($record.get(i++)).text()
+            result.list.push(item)
+        $last = $($records.get(length-1)).find("td")
+        i=1 #the first one is chinese character
+        result["summary"]={}
+        result.summary["total"]=$($last.get(i++)).text()
+        result.summary["stotal"]=$($last.get(i++)).text()
+        result.summary["mtotal"]=$($last.get(i++)).text()
+        result.summary["ltotal"]=$($last.get(i++)).text()
+        result.summary["sltotal"]=$($last.get(i++)).text()
+        
+        res.sendJSONP(params.callback,result)
 
 exports.StockServices = StockServices
