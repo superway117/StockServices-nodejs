@@ -15,7 +15,7 @@ class StockServices
 
     @route: (req, res, params) =>
         if not params.api
-            @outputError(res,"wrong api")
+            @outputError(res,params,"wrong api")
             return 
         subroute = @handles[params.api]
         
@@ -23,7 +23,7 @@ class StockServices
             if @[subroute[1]](params)
                 @[subroute[0]](req, res, params)
             else
-                @outputError(res,"wrong parameters")
+                @outputError(res,params,"wrong parameters")
 
     @handles: 
         {
@@ -33,11 +33,11 @@ class StockServices
             getfunds: ["getFunds","checkFundsParam"]
         }
 
-    @outputError: (res,message)->
+    @outputError: (res,params,message)->
         result={}
         result["status"]="error"
         result["reason"]=message
-        res.send(200, {}, result)
+        res.sendJSONP(params.callback, result)
 
     @get: (res, params,url,callback)=>
         
@@ -50,7 +50,7 @@ class StockServices
                 callback(res,params,pageData)
             
         .on 'error', (e) =>
-            @outputError(res,e.message)
+            @outputError(res,params,e.message)
 
     @canonicalYahoo: (stock)->
         if stock.lastIndexOf('.') is  -1
@@ -105,7 +105,7 @@ class StockServices
             res.sendJSONP(params.callback,result)
         
         .on "error", (error)=>
-            @outputError(res,e.message)
+            @outputError(res,params,e.message)
         
     @canonicalSina: (stock)->
         return if stock.length < 6
@@ -262,7 +262,7 @@ class StockServices
             res.sendJSONP(params.callback,result)
         
         .on "error", (error)=>
-            @outputError(res,e.message)
+            @outputError(res,params,e.message)
 
     @canonicalIfeng: (stock)->
         return if stock.length < 6
@@ -294,7 +294,7 @@ class StockServices
         console?.log(ifengurl)
         @get(res,params,ifengurl,@parseIfengFundsData)
 
-    @parseIfengFundsData: (res,params,pageData)->
+    @parseIfengFundsData: (res,params,pageData)=>
         result={}
         result["status"]="succ"
         result["list"]=[]
@@ -303,29 +303,30 @@ class StockServices
         
         length = $records.size()
         if length <= 2
-            @outputError(res,e.message)
+            console.log("catch error")
+            @outputError(res,params,"query length cant exceed 120 days")
             return
         for index in [1..length-2]
             $record = $($records.get(index)).find("td")
             i=0
             item={}
             item["date"]=$($record.get(i++)).text()
-            item["total"]=$($record.get(i++)).text()
-            item["stotal"]=$($record.get(i++)).text()
-            item["mtotal"]=$($record.get(i++)).text()
-            item["ltotal"]=$($record.get(i++)).text()
-            item["sltotal"]=$($record.get(i++)).text()
-            item["volume"]=$($record.get(i++)).text()
+            item["total"]=parseFloat($($record.get(i++)).text())
+            item["stotal"]=parseFloat($($record.get(i++)).text())
+            item["mtotal"]=parseFloat($($record.get(i++)).text())
+            item["ltotal"]=parseFloat($($record.get(i++)).text())
+            item["sltotal"]=parseFloat($($record.get(i++)).text())
+            item["volume"]=parseFloat($($record.get(i++)).text())
             item["growth"]=$($record.get(i++)).text()
             result.list.push(item)
         $last = $($records.get(length-1)).find("td")
         i=1 #the first one is chinese character
         result["summary"]={}
-        result.summary["total"]=$($last.get(i++)).text()
-        result.summary["stotal"]=$($last.get(i++)).text()
-        result.summary["mtotal"]=$($last.get(i++)).text()
-        result.summary["ltotal"]=$($last.get(i++)).text()
-        result.summary["sltotal"]=$($last.get(i++)).text()
+        result.summary["total"]=parseFloat($($last.get(i++)).text())
+        result.summary["stotal"]=parseFloat($($last.get(i++)).text())
+        result.summary["mtotal"]=parseFloat($($last.get(i++)).text())
+        result.summary["ltotal"]=parseFloat($($last.get(i++)).text())
+        result.summary["sltotal"]=parseFloat($($last.get(i++)).text())
         
         res.sendJSONP(params.callback,result)
 
